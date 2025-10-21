@@ -18,11 +18,16 @@ pipeline {
         }
         
         stage('Stop Old Containers') {
-            steps {
-                echo '⏹️ Stopping old containers...'
-                bat 'docker-compose down || exit 0'
-            }
-        }
+    steps {
+        echo '⏹️ Stopping old containers...'
+        bat '''
+            docker-compose down || exit 0
+            docker rm -f party-paradise-db || exit 0
+            docker rm -f party-paradise-backend || exit 0
+            docker rm -f party-paradise-frontend || exit 0
+        '''
+    }
+}
         
         stage('Start New Containers') {
             steps {
