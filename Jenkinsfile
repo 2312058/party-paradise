@@ -18,16 +18,16 @@ pipeline {
         }
         
         stage('Stop Old Containers') {
-    steps {
-        echo '⏹️ Stopping old containers...'
-        bat '''
-            docker-compose down || exit 0
-            docker rm -f party-paradise-db || exit 0
-            docker rm -f party-paradise-backend || exit 0
-            docker rm -f party-paradise-frontend || exit 0
-        '''
-    }
-}
+            steps {
+                echo '⏹️ Stopping old containers...'
+                bat '''
+                    docker-compose down || exit 0
+                    docker rm -f party-paradise-db || exit 0
+                    docker rm -f party-paradise-backend || exit 0
+                    docker rm -f party-paradise-frontend || exit 0
+                '''
+            }
+        }
         
         stage('Start New Containers') {
             steps {
@@ -39,8 +39,13 @@ pipeline {
         stage('Health Check') {
             steps {
                 echo '🏥 Checking application health...'
-                bat 'timeout /t 15'
-                bat 'curl -f http://localhost:5000/health || exit 1'
+                bat 'ping -n 16 127.0.0.1 > nul'
+                script {
+                    retry(3) {
+                        sleep(time: 5, unit: 'SECONDS')
+                        bat 'curl -f http://localhost:5000/health'
+                    }
+                }
             }
         }
     }
@@ -53,7 +58,7 @@ pipeline {
         }
         failure {
             echo '❌ Deployment Failed!'
-            bat 'docker-compose logs'
+            bat 'docker-compose logs --tail=50'
         }
     }
 }
