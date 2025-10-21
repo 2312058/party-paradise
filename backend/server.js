@@ -42,6 +42,13 @@ app.use('/api/admin/auth', require('./routes/adminAuth'));
 app.use('/api/admin', require('./routes/adminRoutes'));
 app.use('/api/payments', require('./routes/payments'));
 // Basic route for testing
+app.get('/health', (req, res) => {
+  res.status(200).json({ 
+    status: 'OK', 
+    timestamp: new Date(),
+    message: 'Party Paradise API is running'
+  });
+});
 app.get('/', (req, res) => {
   res.json({ 
     message: 'Party Paradise API is running!',
@@ -91,14 +98,6 @@ app.use((err, req, res, next) => {
   res.status(500).json({ 
     message: 'Something went wrong!',
     error: process.env.NODE_ENV === 'development' ? err.message : undefined
-  });
-});
-// Health check endpoint
-app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'OK', 
-    timestamp: new Date(),
-    environment: process.env.NODE_ENV || 'development'
   });
 });
 
