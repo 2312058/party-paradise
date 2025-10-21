@@ -11,11 +11,11 @@ pipeline {
         }
         
         stage('Build Images') {
-            steps {
-                echo '🔨 Building Docker images...'
-                bat 'docker-compose build'
-            }
-        }
+    steps {
+        echo '🔨 Building Docker images...'
+        bat 'docker-compose build --no-cache'
+    }
+}
         
         stage('Stop Old Containers') {
             steps {
